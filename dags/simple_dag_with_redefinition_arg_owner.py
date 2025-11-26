@@ -103,6 +103,8 @@ with DAG(
             "owner": "Foo Bar",
             "email": "f.bar@example.com",
             "email_on_failure": True,
+            "retries": 1,
+            "retry_delay": pendulum.duration(seconds=5),
         },
     )
 
