@@ -43,15 +43,25 @@ def simple_task(**context) -> None:
             f"type_value_name – {type(context_key_value)}",
         )
 
-def some_business_logic(logic: str = None) -> None:
+
+def some_business_logic(number: int = 0) -> None:
     """
     Выполняет некоторую бизнес-логику.
 
-    :param logic: Логика для выполнения.
+    Получает число и проверяет его на чётность.
+    Если число чётное - успех, если нечётное - выбрасывает исключение.
+
+    :param number: Число для проверки.
     :return: Ничего не возвращает.
+    :raises ValueError: Если число нечётное.
     """
     logging.info("Executing some business logic.")
-    logging.info()
+
+    if number % 2 == 0:
+        logging.info(f"✅ Число {number} является ЧЁТНЫМ.  Операция выполнена успешно!")
+    else:
+        logging.error(f"❌ Число {number} является НЕЧЁТНЫМ. Операция завершилась ошибкой!")
+        raise ValueError(f"Число {number} нечётное!  Бизнес-логика требует чётное число.")  # noqa: TRY003, EM102
 
 
 with DAG(
@@ -75,26 +85,29 @@ with DAG(
         python_callable=simple_task,
     )
 
-    zero_division_0 = PythonOperator(
-        task_id="zero_division_0",
-        python_callable=zero_division,
+    some_business_logic_0 = PythonOperator(
+        task_id="some_business_logic_0",
+        python_callable=some_business_logic,
+        op_kwargs={
+            "number": 4,
+        },
     )
 
-    zero_division_1 = PythonOperator(
-        task_id="zero_division_1",
-        python_callable=zero_division,
+    some_business_logic_1 = PythonOperator(
+        task_id="some_business_logic_1",
+        python_callable=some_business_logic,
+        op_kwargs={
+            "number": 5,
+        },
         default_args={
-            "retries": 5,
-            "retry_delay": pendulum.duration(seconds=5),
             "owner": "Foo Bar",
-            "email": [f"f.bar@example.com"],
+            "email": "f.bar@example.com",
             "email_on_failure": True,
         },
     )
 
     end = EmptyOperator(
         task_id="end",
-        default_args={"schedule_interval": "0 11 * * *"},
     )
 
-    start >> simple_task >> [zero_division_0, zero_division_1] >> end
+    start >> simple_task >> [some_business_logic_0, some_business_logic_1] >> end
