@@ -9,7 +9,7 @@ from airflow.operators.python import PythonOperator
 
 # Конфигурация DAG
 OWNER = "i.korsakov"
-DAG_ID = "simple_dag_with_redefinition_args"
+DAG_ID = "simple_dag_with_redefinition_arg_owner"
 
 LONG_DESCRIPTION = """
 # LONG DESCRIPTION
@@ -24,7 +24,7 @@ args = {
     "owner": OWNER,
     "start_date": pendulum.datetime(year=2025, month=1, day=1, tz="UTC"),
     "retries": 3,
-    "retry_delay": pendulum.duration(hours=1),
+    "retry_delay": pendulum.duration(minutes=1),
 }
 
 
@@ -43,16 +43,15 @@ def simple_task(**context) -> None:
             f"type_value_name – {type(context_key_value)}",
         )
 
-
-def zero_division() -> None:
+def some_business_logic(logic: str = None) -> None:
     """
-    Деление на ноль для проверки переопределения аргументов.
+    Выполняет некоторую бизнес-логику.
 
+    :param logic: Логика для выполнения.
     :return: Ничего не возвращает.
     """
-    logging.info("Начинаем деление на ноль.")
-    foo = 1 / 0  # Деление на ноль
-    logging.info(f"Результат деления: {foo}")
+    logging.info("Executing some business logic.")
+    logging.info()
 
 
 with DAG(
@@ -85,8 +84,11 @@ with DAG(
         task_id="zero_division_1",
         python_callable=zero_division,
         default_args={
-            "retries": 10,
-            "retry_delay": pendulum.duration(minutes=15),
+            "retries": 5,
+            "retry_delay": pendulum.duration(seconds=5),
+            "owner": "Foo Bar",
+            "email": [f"f.bar@example.com"],
+            "email_on_failure": True,
         },
     )
 
