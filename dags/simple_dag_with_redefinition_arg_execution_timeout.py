@@ -24,9 +24,9 @@ SHORT_DESCRIPTION = "SHORT DESCRIPTION"
 args = {
     "owner": OWNER,
     "start_date": pendulum.datetime(year=2025, month=1, day=1, tz="UTC"),
-    "retries": 3,
-    "retry_delay": pendulum.duration(minutes=1),
-    "execution_timeout": pendulum.time(second=5)
+    "retries": 1,
+    "retry_delay": pendulum.duration(seconds=5),
+    "execution_timeout": pendulum.duration(seconds=5)
 }
 
 
@@ -68,7 +68,6 @@ with DAG(
     simple_task = PythonOperator(
         task_id="simple_task",
         python_callable=simple_task,
-        pool="foo_bar_pool",
     )
 
     end = EmptyOperator(
