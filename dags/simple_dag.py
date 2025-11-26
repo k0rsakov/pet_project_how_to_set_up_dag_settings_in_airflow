@@ -1,16 +1,10 @@
 import logging
-import uuid
 
-from random import randint
-
-import duckdb
-import pandas as pd
 import pendulum
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
-from faker import Faker
 
 
 # Конфигурация DAG
@@ -41,11 +35,12 @@ def simple_task(**context) -> None:
     @param context: Контекст DAG.
     @return: Ничего не возвращает.
     """
-    for context_value in context:
+
+    for context_key, context_key_value in context.items():
         logging.info(
-            f"key_name – {context_value} | "
-            f"value_name – {context[context_value]} | "
-            f"type_value_name – {type(context[context_value])}",
+            f"key_name – {context_key} | "
+            f"value_name – {context_key_value} | "
+            f"type_value_name – {type(context_key_value)}",
         )
 
 
