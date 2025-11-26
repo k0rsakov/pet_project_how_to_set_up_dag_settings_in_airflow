@@ -1,17 +1,24 @@
 import json
+import logging
 
 import requests
 
 
-def create_airflow_pool(
-        name: str | None = None,
-        slots: int | None = None,
-        description: str | None = None,
-        include_deferred: bool = False,
-        airflow_api_url: str = "http://localhost:8080/api/v1/pools",
-        user_name: str | None = None,
-        password_auth: str | None = None,
-):
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
+
+def create_airflow_pool(  # noqa: C901, PLR0913
+    name: str | None = None,
+    slots: int | None = None,
+    description: str | None = None,
+    include_deferred: bool = False,  # noqa: FBT001, FBT002
+    airflow_api_url: str = "http://localhost:8080/api/v1/pools",
+    user_name: str | None = None,
+    password_auth: str | None = None,
+) -> None:
     """
     Создаёт pool в Apache Airflow через REST API.
 
@@ -48,13 +55,13 @@ def create_airflow_pool(
         )
 
         if response.status_code in {200, 201}:
-            print(f"Pool '{name}' успешно создан с {slots} слотами.")
+            logging.info(f"Pool '{name}' успешно создан с {slots} слотами.")
         elif response.status_code == 409:  # noqa: PLR2004
-            print(f"Pool '{name}' уже существует.")
+            logging.info(f"Pool '{name}' уже существует.")
         else:
-            print(f"Ошибка при создании pool '{name}': {response.status_code} - {response.text}")
-            response. raise_for_status()
+            logging.info(f"Ошибка при создании pool '{name}': {response.status_code} - {response.text}")
+            response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        print(f"Ошибка соединения с Airflow API: {e}")
+        logging.info(f"Ошибка соединения с Airflow API: {e}")
         raise

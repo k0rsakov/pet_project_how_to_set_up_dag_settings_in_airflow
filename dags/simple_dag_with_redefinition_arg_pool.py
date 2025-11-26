@@ -51,6 +51,7 @@ with DAG(
     dag_id=DAG_ID,
     schedule_interval="0 10 * * *",
     default_args=args,
+    catchup=False,
     tags=["context"],
     description=SHORT_DESCRIPTION,
     concurrency=1,
@@ -66,7 +67,7 @@ with DAG(
     simple_task = PythonOperator(
         task_id="simple_task",
         python_callable=simple_task,
-        pool='foo_bar_pool',
+        pool="foo_bar_pool",
     )
 
     end = EmptyOperator(

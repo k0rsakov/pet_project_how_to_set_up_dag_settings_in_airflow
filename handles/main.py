@@ -7,5 +7,5 @@ if __name__ == "__main__":
         slots=1,
         description="Pool для демо",
         user_name="airflow",
-        password_auth="airflow"
+        password_auth="airflow",  # noqa: S106
     )
