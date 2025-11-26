@@ -47,6 +47,8 @@ def simple_task(**context) -> None:
 
     time.sleep(10)
 
+def send_sla():
+    logging.info("⏰ SLA missed!")
 
 with DAG(
     dag_id=DAG_ID,
@@ -55,6 +57,7 @@ with DAG(
     catchup=False,
     tags=["context"],
     description=SHORT_DESCRIPTION,
+    sla_miss_callback=send_sla,
     concurrency=1,
     max_active_tasks=1,
     max_active_runs=1,
@@ -72,7 +75,7 @@ with DAG(
 
     end = EmptyOperator(
         task_id="end",
-        sla=pendulum.duration(seconds=5)
+        sla=pendulum.duration(seconds=5),
     )
 
     start >> simple_task >> end
